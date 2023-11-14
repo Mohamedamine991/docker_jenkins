@@ -20,8 +20,12 @@ deploy_to_azure:
   - chmod 400 $SSH_KEY
 
   script:
+    - ssh  -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "rm -rf /tmp/my-react-app"
+   
     - scp -o StrictHostKeyChecking=no -i $SSH_KEY -r ./* $SERVER_USER@$SERVER_IP:/tmp/my-react-app
     - ssh  -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "cd /tmp/my-react-app && npm install && npm run start"
+    - ssh  -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "cd /tmp/my-react-app && npm run start"
+
   environment:
     name: production
   only:

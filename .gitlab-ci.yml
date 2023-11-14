@@ -1,7 +1,6 @@
 stages:
-  - build
   - deploy
-
+  - build
 build_job:
   stage: build
   image: node:latest
@@ -14,11 +13,22 @@ build_job:
   only:
     - master
 
-deploy_job:
+deploy_to_azure:
   stage: deploy
   image: alpine:latest
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $VM_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - apt-get update -y && apt-get install -y scp
   script:
-    - scp -r build/* "workshopdevops"@Adnenhamdi2009":/tmp
-    - ssh "workshopdevops"@Adnenhamdi2009" 'cd /tmp && ls'
+    - scp  -r ./* -i $SSH_KEY $SERVER_USER@$SERVER_IP:/tmp/my-react-app
+    - ssh  -i $SSH_KEY $SERVER_USER@$SERVER_IP "cd /tmp/my-react-app && npm install && npm run start"
+  environment:
+    name: production
   only:
     - master

@@ -17,7 +17,7 @@ deploy_to_azure:
   stage: deploy
   image: linuxserver/openssh-server
   script:
-    - scp  -r ./* -i $SSH_KEY $SERVER_USER@$SERVER_IP:/tmp/my-react-app
+    - scp -o StrictHostKeyChecking=no -r ./* -i $SSH_KEY $SERVER_USER@$SERVER_IP:/tmp/my-react-app
     - ssh  -i $SSH_KEY $SERVER_USER@$SERVER_IP "cd /tmp/my-react-app && npm install && npm run start"
   environment:
     name: production

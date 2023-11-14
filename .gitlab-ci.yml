@@ -16,8 +16,10 @@ build_job:
 deploy_to_azure:
   stage: deploy
   image: linuxserver/openssh-server
+    - eval $(ssh-agent -s)
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
   script:
-    - scp -o StrictHostKeyChecking=no -r ./* -i $SSH_KEY $SERVER_USER@$SERVER_IP:/tmp/my-react-app
+    - scp -o StrictHostKeyChecking=no -r ./* $SERVER_USER@$SERVER_IP:/tmp/my-react-app
     - ssh  -i $SSH_KEY $SERVER_USER@$SERVER_IP "cd /tmp/my-react-app && npm install && npm run start"
   environment:
     name: production

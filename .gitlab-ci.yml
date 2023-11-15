@@ -1,6 +1,8 @@
 stages:
-  - deploy
   - build
+  - dockerize
+  - deploy
+
 build_job:
   stage: build
   image: node:latest
@@ -13,19 +15,24 @@ build_job:
   only:
     - master
 
+dockerize_image:
+  stage: dockerize
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t aminehamdi2001/devopsworkshop:1 .
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker push aminehamdi2001/devopsworkshop:1
+  only:
+    - master
+
 deploy_to_azure:
   stage: deploy
   image: linuxserver/openssh-server
   before_script:
-  - chmod 400 $SSH_KEY
-
+    - chmod 400 $SSH_KEY
   script:
-   
-    - scp -o StrictHostKeyChecking=no -i $SSH_KEY -r ./* $SERVER_USER@$SERVER_IP:/tmp/my-react-app
-    - ssh  -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "cd /tmp/my-react-app && npm install "
-    - ssh  -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "cd /tmp/my-react-app && npm run start"
-
-  environment:
-    name: production
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "docker pull aminehamdi2001/devopsworkshop:1 && docker run -d aminehamdi2001/devopsworkshop:1"
   only:
     - master

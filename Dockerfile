@@ -1,29 +1,20 @@
-# Step 1: Use an official Node.js runtime as a parent image
-FROM node:latest as build
+# pull official base image
+FROM node:13.12.0-alpine
 
-# Step 2: Set the working directory in the container
-WORKDIR /usr/src/app
+# set working directory
+WORKDIR /app
 
-# Step 3: Copy the package.json and package-lock.json (if available)
-COPY package*.json ./
+# add `/app/node_modules/.bin` to $PATH
+ENV PATH /app/node_modules/.bin:$PATH
 
-# Step 4: Install any needed packages
-RUN npm install
+# install app dependencies
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --silent
+RUN npm install react-scripts@3.4.1 -g --silent
 
-# Step 5: Copy the rest of your app's source code
-COPY . .
+# add app
+COPY . ./
 
-# Step 6: Build your app
-RUN npm run build
-
-# Step 7: Use nginx to serve the React application
-FROM nginx:alpine
-
-# Step 8: Copy built assets from build stage to nginx serving directory
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
-
-# Step 9: Expose port 80 to the outside once the container has launched
-EXPOSE 80
-
-# Step 10: Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# start app
+CMD ["npm", "start"]

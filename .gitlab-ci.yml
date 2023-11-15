@@ -33,6 +33,6 @@ deploy_to_azure:
   before_script:
     - chmod 400 $SSH_KEY
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "sudo docker pull aminehamdi2001/devopsworkshop:1 && sudo docker run -d aminehamdi2001/devopsworkshop:1"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SERVER_USER@$SERVER_IP "sudo docker pull aminehamdi2001/devopsworkshop:1 && sudo docker run -p 3000:3000 -d aminehamdi2001/devopsworkshop:1"
   only:
     - master

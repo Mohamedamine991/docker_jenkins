@@ -14,16 +14,17 @@ pipeline {
             }
         }
 
-        stage('Copy Project to Server') {
-            steps {
-                script {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
-                        // Copy project to server using scp
-                        sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./* ${SERVER_USER_IP}:${PROJECT_DIR}/"
-                    }
-                }
+       stage('Copy Project to Server') {
+    steps {
+        script {
+            withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
+                // Use the SSH_KEY variable directly without Groovy interpolation
+                sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY -r ./* ubuntu@34.245.75.79:/tmp/react/'
             }
         }
+    }
+}
+
 
         stage('Install and Start Application') {
             steps {

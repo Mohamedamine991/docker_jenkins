@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    options {
+        skipDefaultCheckout(true)
+    }
 
     environment {
         SSH_CREDENTIALS = 'vmCredentials' // The ID of your SSH credentials stored in Jenkins

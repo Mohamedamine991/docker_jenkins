@@ -7,7 +7,6 @@ pipeline {
     environment {
         VM_USER_IP = 'ubuntu@34.245.75.79'   
     }
-
     stages {
         stage('Dockerizee') {
             agent {
@@ -25,7 +24,7 @@ pipeline {
                 }
             }
             when {
-                branch 'master'
+                branch 'main'
             }
         }
 
@@ -43,7 +42,7 @@ pipeline {
                 }
             }
             when {
-                branch 'master'
+                branch 'main'
             }
         }
     }

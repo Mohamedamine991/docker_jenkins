@@ -19,9 +19,6 @@ pipeline {
                     }
                 }
             }
-            when {
-                branch 'main'
-            }
         }
 
         stage('Deploy to Vm') {
@@ -36,9 +33,6 @@ pipeline {
                         """
                     }
                 }
-            }
-            when {
-                branch 'main'
             }
         }
     }

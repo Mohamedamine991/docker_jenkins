@@ -21,8 +21,7 @@ pipeline {
     steps {
         script {
             withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
-                // Use the SSH_KEY variable directly without Groovy interpolation
-                sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./* ubuntu@34.245.75.79:${PROJECT_DIR}"
+                sh "scp -vvv -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./* ubuntu@34.245.75.79:${PROJECT_DIR}"
             }
         }
     }

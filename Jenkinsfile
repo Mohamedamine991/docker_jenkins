@@ -2,22 +2,24 @@ pipeline {
     agent any
 
     environment {
-        // Assuming you have already stored the SSH credentials in Jenkins
-        SSH_CREDENTIALS = 'vmCredentials'
-        SERVER_USER = 'ubuntu' // Your server's SSH username
-        SERVER_IP = '34.245.75.79' // Your server's IP address
-        PROJECT_DIR = '/tmp/react/' // Directory path on the server
+        SSH_CREDENTIALS = 'vmCredentials' // The ID of your SSH credentials stored in Jenkins
+        SERVER_USER_IP = 'ubuntu@34.245.75.79' // The username and IP address of your VM
+        PROJECT_DIR = '/tmp/react' // Directory path on the server where you want to copy your project
     }
 
     stages {
-        
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
         stage('Copy Project to Server') {
             steps {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
-                        // Rsync project to server, excluding node_modules
-                        sh "rsync -avz -e 'ssh -o StrictHostKeyChecking=no -i ${SSH_KEY}' --exclude='node_modules/' ./ ${SERVER_USER}@${SERVER_IP}:${PROJECT_DIR}"
+                        // Copy project to server using scp
+                        sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./* ${SERVER_USER_IP}:${PROJECT_DIR}/"
                     }
                 }
             }
@@ -26,14 +28,14 @@ pipeline {
         stage('Install and Start Application') {
             steps {
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: SSH_CREDENTIALS, keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
                         // Run npm install and npm start commands on the server
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${SERVER_USER}@${SERVER_IP} << EOF
-                                cd ${PROJECT_DIR}
-                                npm install
-                                npm run start
-                            EOF
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${SERVER_USER_IP} '
+                                cd ${PROJECT_DIR} &&
+                                npm install &&
+                                nohup npm run start &
+                            '
                         """
                     }
                 }

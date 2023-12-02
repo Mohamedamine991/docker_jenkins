@@ -12,7 +12,7 @@ pipeline {
             
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'registry', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker build -t aminehamdi2022/dockerapp:latest .'
                         sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
                         sh 'docker push aminehamdi2001/devopsworkshop:latest'

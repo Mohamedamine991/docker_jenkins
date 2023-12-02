@@ -5,43 +5,45 @@ pipeline {
     }
 
     environment {
-        SSH_CREDENTIALS = 'vmCredentials' // The ID of your SSH credentials stored in Jenkins
-        SERVER_USER_IP = 'ubuntu@34.245.75.79' // The username and IP address of your VM
-        PROJECT_DIR = '/tmp/react' // Directory path on ddffthe servsser where you want to copy your project
+        VM_USER_IP = 'ubuntu@34.245.75.79'   
     }
 
     stages {
-        stage('Checkout') {
+        stage('Dockerize') {
+            agent {
+                docker {
+                    image 'docker:latest'
+                }
+            }
             steps {
-                checkout scm
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'registry', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker build -t aminehamdi2022/dockerapp:latest .'
+                        sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
+                        sh 'docker push aminehamdi2001/devopsworkshop:latest'
+                    }
+                }
+            }
+            when {
+                branch 'master'
             }
         }
 
-       stage('Copy Project to Server') {
-    steps {
-        script {
-            withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
-                sh "scp  -o StrictHostKeyChecking=no -i ${SSH_KEY}  ./* ${SERVER_USER_IP}:${PROJECT_DIR}"
-            }
-        }
-    }
-}
-
-
-        stage('Install and Start Application') {
+        stage('Deploy to Vm') {
             steps {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
-                        // Run npm install and npm start commands on the server
+                        sh 'chmod 400 $SSH_KEY'
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${SERVER_USER_IP} '
-                                cd ${PROJECT_DIR} &&
-                                npm install &&
-                                nohup npm run start &
-                            '
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \
+                            "sudo docker pull aminehamdi2001/dockerapp:latest && \
+                            sudo docker run -p 3000:3000 -d aminehamdi2001/devopsworkshop:1"
                         """
                     }
                 }
+            }
+            when {
+                branch 'master'
             }
         }
     }

@@ -7,7 +7,7 @@ pipeline {
     environment {
         SSH_CREDENTIALS = 'vmCredentials' // The ID of your SSH credentials stored in Jenkins
         SERVER_USER_IP = 'ubuntu@34.245.75.79' // The username and IP address of your VM
-        PROJECT_DIR = '/tmp/react' // Directory path on the server where you want to copy your project
+        PROJECT_DIR = '/tmp/react' // Directory path on ffthe server where you want to copy your project
     }
 
     stages {

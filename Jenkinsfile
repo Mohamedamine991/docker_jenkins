@@ -13,9 +13,9 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'sudo docker build -t aminehamdi2022/dockerapp:latest .'
-                        sh 'echo $DOCKER_PASSWORD | sudo docker login --username $DOCKER_USERNAME --password-stdin'
-                        sh 'sudo docker push aminehamdi2001/devopsworkshop:latest'
+                        sh 'docker build -t aminehamdi2022/dockerapp:latest .'
+                        sh 'echo $DOCKER_PASSWORD |docker login --username $DOCKER_USERNAME --password-stdin'
+                        sh 'docker push aminehamdi2001/devopsworkshop:latest'
                     }
                 }
             }
@@ -28,8 +28,8 @@ pipeline {
                         sh 'chmod 400 $SSH_KEY'
                         sh """
                             ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \
-                            "sudo docker pull aminehamdi2001/dockerapp:latest && \
-                            sudo docker run -p 3000:3000 -d aminehamdi2001/devopsworkshop:1"
+                            " docker pull aminehamdi2001/dockerapp:latest && \
+                             docker run -p 3000:3000 -d aminehamdi2001/devopsworkshop:1"
                         """
                     }
                 }

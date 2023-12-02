@@ -15,7 +15,7 @@ pipeline {
         stage('Copy Project to Server') {
             steps {
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: SSH_CREDENTIALS, keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
                         // Rsync project to server, excluding node_modules
                         sh "rsync -avz -e 'ssh -o StrictHostKeyChecking=no -i ${SSH_KEY}' --exclude='node_modules/' ./ ${SERVER_USER}@${SERVER_IP}:${PROJECT_DIR}"
                     }

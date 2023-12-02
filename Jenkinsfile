@@ -7,7 +7,7 @@ pipeline {
     environment {
         SSH_CREDENTIALS = 'vmCredentials' // The ID of your SSH credentials stored in Jenkins
         SERVER_USER_IP = 'ubuntu@34.245.75.79' // The username and IP address of your VM
-        PROJECT_DIR = '/tmp/react' // Directory path on ffthe server where you want to copy your project
+        PROJECT_DIR = '/tmp/react' // Directory path on ffthe servsser where you want to copy your project
     }
 
     stages {
@@ -21,9 +21,7 @@ pipeline {
     steps {
         script {
             withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
-                sh "ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${SERVER_USER_IP} 'echo ${SERVER_USER_IP}   '"
-                sh "scp -vvv -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./* ${SERVER_USER_IP}:${PROJECT_DIR}"
-
+                sh "scp  -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./* ${SERVER_USER_IP}:${PROJECT_DIR}"
             }
         }
     }

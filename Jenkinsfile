@@ -9,7 +9,7 @@ pipeline {
     }
     stages {
         stage('Dockerizee') {
-            }
+            
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'registry', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -19,8 +19,8 @@ pipeline {
                     }
                 }
             }
+        
         }
-
         stage('Deploy to Vm') {
             steps {
                 script {
@@ -35,5 +35,6 @@ pipeline {
                 }
             }
         }
+    }
     }
 //hreqsdqdfsds

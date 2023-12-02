@@ -9,10 +9,6 @@ pipeline {
     }
     stages {
         stage('Dockerizee') {
-            agent {
-                docker {
-                    image 'docker:latest'
-                }
             }
             steps {
                 script {

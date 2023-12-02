@@ -21,7 +21,7 @@ pipeline {
     steps {
         script {
             withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
-                sh "scp  -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./* ${SERVER_USER_IP}:${PROJECT_DIR}"
+                sh "scp  -o StrictHostKeyChecking=no -i ${SSH_KEY}  ./* ${SERVER_USER_IP}:${PROJECT_DIR}"
             }
         }
     }

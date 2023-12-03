@@ -3,51 +3,31 @@ pipeline {
     options {
         skipDefaultCheckout(true)
     }
-
+//zdfzf
     environment {
         VM_USER_IP = 'ubuntu@34.245.75.79'   
     }
-    
-    
         stages {
-
-            
-    
         stage('Checkout Code') {
             steps {
                 // Check out from a Git repositorysds
                 checkout scm
-                when {
-        allOf {
-            changeRequest()
-            expression { env.CHANGE_TARGET == 'main' }
-        }
-    }
+                
             }
         }
         stage('Dockerize') {
     steps {
         script {
-            // Optionally add a step to print the current directory and contents
-            sh 'pwd'
-            sh 'ls -la'
-
             withCredentials([usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                // Ensure you're in the right directory where Dockerfile is located
-                //sh ' docker build -t aminehamdi2022/dockerapp:latest .'
+                sh ' docker build -t aminehamdi2022/dockerapp:latest .'
                 sh ' echo $DOCKER_PASSWORD |docker login --username $DOCKER_USERNAME --password-stdin'
-                //sh ' docker push aminehamdi2022/dockerapp:latest'
+                sh ' docker push aminehamdi2022/dockerapp:latest'
             }
         }
-        when {
-        allOf {
-            changeRequest()
-            expression { env.CHANGE_TARGET == 'main' }
-        }
-    }
     }
 }
         stage('Deploy to Vm') {
+            
             steps {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -60,15 +40,8 @@ pipeline {
                         """
                     }
                 }
-                when {
-        allOf {
-            changeRequest()
-            expression { env.CHANGE_TARGET == 'main' }
-        }
-    }
+                
             }
         }
     }
-    
-    
 }

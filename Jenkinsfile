@@ -33,7 +33,7 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'chmod 400 $SSH_KEY'
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP}
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY}  ${VM_USER_IP}
                             "docker stop $(docker ps -q --filter ancestor=aminehamdi2022/dockerapp:latest) || true && \
                              docker rm $(docker ps -a -q --filter ancestor=aminehamdi2022/dockerapp:latest) || true && \
                              echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin && \

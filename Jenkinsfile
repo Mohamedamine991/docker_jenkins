@@ -24,9 +24,9 @@ pipeline {
 
             withCredentials([usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                 // Ensure you're in the right directory where Dockerfile is located
-                sh ' docker build -t aminehamdi2022/dockerapp:latest .'
+                //sh ' docker build -t aminehamdi2022/dockerapp:latest .'
                 sh ' echo $DOCKER_PASSWORD |docker login --username $DOCKER_USERNAME --password-stdin'
-                sh ' docker push aminehamdi2001/devopsworkshop:latest'
+                sh ' docker push aminehamdi2022/dockerapp:latest'
             }
         }
     }

@@ -17,7 +17,7 @@ pipeline {
         stage('Dockerize') {
     steps {
         script {
-            // Optionally add a step to print the current directory and contents
+            // Optionally add a step to print the current directory and contents fd
             if (!(env.CHANGE_TARGET == 'main' && env.CHANGE_ID)){
 
             sh 'pwd'

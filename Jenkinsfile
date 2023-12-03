@@ -26,7 +26,7 @@ pipeline {
                 // Ensure you're in the right directory where Dockerfile is located
                 //sh ' docker build -t aminehamdi2022/dockerapp:latest .'
                 sh ' echo $DOCKER_PASSWORD |docker login --username $DOCKER_USERNAME --password-stdin'
-                sh ' docker push aminehamdi2022/dockerapp:latest'
+                //sh ' docker push aminehamdi2022/dockerapp:latest'
             }
         }
     }
@@ -34,11 +34,12 @@ pipeline {
         stage('Deploy to Vm') {
             steps {
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'chmod 400 $SSH_KEY'
                         sh """
                             ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \
-                            " docker pull aminehamdi2001/dockerapp:latest && \
+                            "echo $DOCKER_PASSWORD |docker login --username $DOCKER_USERNAME --password-stdin && \
+                             docker pull aminehamdi2001/dockerapp:latest && \
                              docker run -p 3000:3000 -d aminehamdi2001/devopsworkshop:1"
                         """
                     }

@@ -14,18 +14,19 @@ pipeline {
             
     
         stage('Checkout Code') {
+            when {
+                branch 'main'
+            }
             steps {
                 // Check out from a Git repositorysds
                 checkout scm
-                when {
-        allOf {
-            changeRequest()
-            expression { env.CHANGE_TARGET == 'main' }
-        }
-    }
+                
             }
         }
         stage('Dockerize') {
+             when {
+                branch 'main'
+            }
     steps {
         script {
             // Optionally add a step to print the current directory and contents
@@ -39,15 +40,13 @@ pipeline {
                 //sh ' docker push aminehamdi2022/dockerapp:latest'
             }
         }
-        when {
-        allOf {
-            changeRequest()
-            expression { env.CHANGE_TARGET == 'main' }
-        }
-    }
+        
     }
 }
         stage('Deploy to Vm') {
+             when {
+                branch 'main'
+            }
             steps {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -60,12 +59,7 @@ pipeline {
                         """
                     }
                 }
-                when {
-        allOf {
-            changeRequest()
-            expression { env.CHANGE_TARGET == 'main' }
-        }
-    }
+                
             }
         }
     }

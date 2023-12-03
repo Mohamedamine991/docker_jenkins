@@ -10,7 +10,7 @@ pipeline {
         stages {
         stage('Checkout Code') {
             steps {
-                // Check out from a Git repositorysdsfghjddddd
+                // Check out from a Git repositorysdsfghjdddddssss
                 checkout scm
                 
             }

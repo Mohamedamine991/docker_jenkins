@@ -7,11 +7,17 @@ pipeline {
     environment {
         VM_USER_IP = 'ubuntu@34.245.75.79'   
     }
+    when {
+        allOf {
+            changeRequest()
+            expression { env.CHANGE_TARGET == 'main' }
+        }
+    }
     
         stages {
         stage('Checkout Code') {
             steps {
-                // Check out from a Git repository
+                // Check out from a Git repositorysds
                 checkout scm
             }
         }
@@ -49,4 +55,3 @@ pipeline {
     }
     
 }
-//hreqsdqdfsds

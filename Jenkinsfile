@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Check out from a Git repositorysdsfghjdddddssssdddd
-                ns scm
+                checkout scm
                 
             }
         }

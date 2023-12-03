@@ -7,7 +7,7 @@ pipeline {
     environment {
         VM_USER_IP = 'ubuntu@34.245.75.79'   
     }
-    stages {
+    
         stages {
         stage('Checkout Code') {
             steps {
@@ -46,5 +46,6 @@ pipeline {
             }
         }
     }
-    }
+    
+}
 //hreqsdqdfsds

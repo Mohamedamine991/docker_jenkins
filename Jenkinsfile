@@ -34,7 +34,7 @@ pipeline {
                         sh 'chmod 400 $SSH_KEY'
                         sh """
                             ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \
-                            ""docker stop $(docker ps -q --filter ancestor=aminehamdi2022/dockerapp:latest) || true && \
+                            "docker stop $(docker ps -q --filter ancestor=aminehamdi2022/dockerapp:latest) || true && \
                              echo $DOCKER_PASSWORD |docker login --username $DOCKER_USERNAME --password-stdin && \
                              docker pull aminehamdi2022/dockerapp:latest && \
                              docker run -p 3000:3000 -d aminehamdi2022/dockerapp:latest "

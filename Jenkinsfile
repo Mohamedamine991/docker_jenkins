@@ -39,8 +39,8 @@ pipeline {
                         sh """
                             ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \
                             "echo $DOCKER_PASSWORD |docker login --username $DOCKER_USERNAME --password-stdin && \
-                             docker pull aminehamdi2001/dockerapp:latest && \
-                             docker run -p 3000:3000 -d aminehamdi2001/devopsworkshop:1"
+                             docker pull aminehamdi2022/dockerapp:latest && \
+                             docker run -p 3000:3000 -d aminehamdi2022/dockerapp:latest "
                         """
                     }
                 }

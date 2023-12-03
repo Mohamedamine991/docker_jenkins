@@ -3,7 +3,7 @@ pipeline {
     options {
         skipDefaultCheckout(true)
     }
-//zdfzfddd
+//zdfzfddddddd
     environment {
         VM_USER_IP = 'ubuntu@34.245.75.79'   
     }

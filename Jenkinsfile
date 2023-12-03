@@ -7,18 +7,22 @@ pipeline {
     environment {
         VM_USER_IP = 'ubuntu@34.245.75.79'   
     }
-    when {
+    
+    
+        stages {
+
+            
+    
+        stage('Checkout Code') {
+            steps {
+                // Check out from a Git repositorysds
+                checkout scm
+                when {
         allOf {
             changeRequest()
             expression { env.CHANGE_TARGET == 'main' }
         }
     }
-    
-        stages {
-        stage('Checkout Code') {
-            steps {
-                // Check out from a Git repositorysds
-                checkout scm
             }
         }
         stage('Dockerize') {
@@ -35,6 +39,12 @@ pipeline {
                 //sh ' docker push aminehamdi2022/dockerapp:latest'
             }
         }
+        when {
+        allOf {
+            changeRequest()
+            expression { env.CHANGE_TARGET == 'main' }
+        }
+    }
     }
 }
         stage('Deploy to Vm') {
@@ -50,8 +60,15 @@ pipeline {
                         """
                     }
                 }
+                when {
+        allOf {
+            changeRequest()
+            expression { env.CHANGE_TARGET == 'main' }
+        }
+    }
             }
         }
     }
+    
     
 }

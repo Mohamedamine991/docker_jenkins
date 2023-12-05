@@ -14,23 +14,30 @@ pipeline {
             }
         }
         stage('Dockerize') {
-            when {
-                expression { env.CHANGE_ID != null }
-            }
-            steps {
-                script {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'buildI_instance', keyFileVariable: 'SSH_KEY_BUILD'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'chmod 400 $SSH_KEY_BUILD'
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i $SSH_KEY_BUILD $BUILD_INSTANCE_IP \\
-                            \"echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin && \\
-                               docker build -t aminehamdi2022/dockerapp:latest . && \\
-                               docker push aminehamdi2022/dockerapp:latest\"
-                        """
-                    }
-                }
+    when {
+        expression { env.CHANGE_ID != null }
+    }
+    steps {
+        script {
+            withCredentials([sshUserPrivateKey(credentialsId: 'build_instance', keyFileVariable: 'SSH_KEY_BUILD'), 
+                             usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD'),
+                             string(credentialsId: 'github_token', variable: 'GITHUB_TOKEN')]) {
+                sh 'chmod 400 $SSH_KEY_BUILD'
+                sh """
+                    ssh -o StrictHostKeyChecking=no -i $SSH_KEY_BUILD $BUILD_INSTANCE_IP \\
+                    \" cd /tmp/project && \\
+                       git pull origin devbranch && \\
+                       echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin && \\
+                       docker build -t aminehamdi2022/dockerapp:latest . && \\
+                       docker push aminehamdi2022/dockerapp:latest
+                    \"
+                """
             }
         }
+    }
+}
+
+
         stage('Deploy to Vm') {
     when {
         expression { env.CHANGE_ID != null }

@@ -13,6 +13,10 @@ pipeline {
             }
         }
         stage('Dockerize') {
+            when {
+                // Only execute this stage for pull requests
+                expression { env.CHANGE_ID != null }
+            }
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -24,6 +28,10 @@ pipeline {
             }
         }
         stage('Deploy to Vm') {
+            when {
+                // Only execute this stage for pull requests
+                expression { env.CHANGE_ID != null }
+            }
             steps {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -42,4 +50,3 @@ pipeline {
         }
     }
 }
-//hgfdsdddddds

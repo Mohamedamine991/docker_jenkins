@@ -5,6 +5,7 @@ pipeline {
     }
     environment {
         VM_USER_IP = 'ubuntu@34.245.75.79'
+        BUILD_INSTANCE_IP = 'ubuntu@52.215.236.247' 
     }
     stages {
         stage('Checkout Code') {
@@ -14,40 +15,43 @@ pipeline {
         }
         stage('Dockerize') {
             when {
-                // Only execute this stage for pull requests
                 expression { env.CHANGE_ID != null }
             }
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker build -t aminehamdi2022/dockerapp:latest .'
-                        sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
-                        sh 'docker push aminehamdi2022/dockerapp:latest'
-                    }
-                }
-            }
-        }
-        stage('Deploy to Vm') {
-            when {
-                // Only execute this stage for pull requests
-                expression { env.CHANGE_ID != null }
-            }
-            steps {
-                script {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'chmod 400 $SSH_KEY'
+                    withCredentials([sshUserPrivateKey(credentialsId: 'buildI_instance', keyFileVariable: 'SSH_KEY_BUILD'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'chmod 400 $SSH_KEY_BUILD'
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \\
-                            \"docker stop docker_app || true && \\
-                             docker rm docker_app || true && \\
-                             echo \$DOCKER_PASSWORD | docker login --username \$DOCKER_USERNAME --password-stdin && \\
-                             docker pull aminehamdi2022/dockerapp:latest && \\
-                             docker run --name docker_app -p 3000:3000 -d aminehamdi2022/dockerapp:latest\"
+                            ssh -o StrictHostKeyChecking=no -i $SSH_KEY_BUILD $BUILD_INSTANCE_IP \\
+                            \"echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin && \\
+                               docker build -t aminehamdi2022/dockerapp:latest . && \\
+                               docker push aminehamdi2022/dockerapp:latest\"
                         """
                     }
                 }
             }
         }
+        stage('Deploy to Vm') {
+    when {
+        expression { env.CHANGE_ID != null }
+    }
+    steps {
+        script {
+            withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                sh 'chmod 400 $SSH_KEY'
+
+                sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} docker-compose.yml ${VM_USER_IP}:/tmp/docker-compose.yml"
+
+                sh """
+                    ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \\
+                    \"echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin && \\
+                        docker pull aminehamdi2022/dockerapp:latest && \\
+                        docker-compose -f /tmp/docker-compose.yml up -d\"
+                """
+            }
+        }
     }
 }
-//hgfd
+
+    }
+}

@@ -21,7 +21,7 @@ pipeline {
         script {
             withCredentials([sshUserPrivateKey(credentialsId: 'build_instance', keyFileVariable: 'SSH_KEY_BUILD'), 
                              usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD'),
-                             string(credentialsId: 'github_token', variable: 'GITHUB_TOKEN')]) {
+                             usernamePassword(credentialsId: 'github_token', usernameVariable: 'DUMMY_USER', passwordVariable: 'GITHUB_TOKEN'),]) {
                 sh 'chmod 400 $SSH_KEY_BUILD'
                 sh """
                     ssh -o StrictHostKeyChecking=no -i $SSH_KEY_BUILD $BUILD_INSTANCE_IP \\

@@ -47,13 +47,13 @@ pipeline {
             withCredentials([sshUserPrivateKey(credentialsId: 'vmCredentials', keyFileVariable: 'SSH_KEY'), usernamePassword(credentialsId: 'registy', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                 sh 'chmod 400 $SSH_KEY'
 
-                sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} docker-compose.yml ${VM_USER_IP}:/tmp/docker-compose.yml"
+                //sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} docker-compose.yml ${VM_USER_IP}:/tmp/docker-compose.yml"
 
                 sh """
                     ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${VM_USER_IP} \\
                     \"echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin && \\
                         docker pull aminehamdi2022/dockerapp:latest && \\
-                        docker-compose -f /tmp/docker-compose.yml up -d\"
+                        docker compose -f /tmp/docker-compose.yml up -d\"
                 """
             }
         }

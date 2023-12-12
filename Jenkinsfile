@@ -75,7 +75,7 @@ stage('Update VM File') {
                 
                     script {
                         withCredentials([sshUserPrivateKey(credentialsId: 'dashboard', keyFileVariable: 'SSH_KEY')]){
-                        sh "ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${Dashboard_IP} 'echo http://34.255.208.62:8080 >> /home/ubuntu/express_server/express-commit/public/file.txt'"
+                        sh "ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${Dashboard_IP} 'echo http://${Dashboard_IP}:8080\n >> /home/ubuntu/express_server/express-commit/public/file.txt'"
                     }}
                 
             }
